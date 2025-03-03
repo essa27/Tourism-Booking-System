@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_BOOKINGS 100
+#define NAME_LENGTH 50
+#define DEST_LENGTH 50
+
+typedef struct {
+    char customerName[NAME_LENGTH];
+    char destination[DEST_LENGTH];
+    int nights;
+    double price;
+} Booking;
+
+Booking bookings[MAX_BOOKINGS];
+int bookingCount = 0;
+
+void addBooking(const char *name, const char *destination, int nights, double price) {
+    if (bookingCount >= MAX_BOOKINGS) {
+        printf("Booking list is full!\n");
+        return;
+    }
+    strcpy(bookings[bookingCount].customerName, name);
+    strcpy(bookings[bookingCount].destination, destination);
+    bookings[bookingCount].nights = nights;
+    bookings[bookingCount].price = price;
+    bookingCount++;
+    printf("Booking for '%s' to %s added successfully!\n", name, destination);
+}
+
+void listBookings() {
+    if (bookingCount == 0) {
+        printf("No bookings available.\n");
+        return;
+    }
+    printf("\nBookings:\n");
+    for (int i = 0; i < bookingCount; i++) {
+        printf("%d. %s - %s, %d nights, $%.2f\n", i + 1, bookings[i].customerName, bookings[i].destination, bookings[i].nights, bookings[i].price);
+    }
+}
+
+void deleteBooking(const char *name) {
+    for (int i = 0; i < bookingCount; i++) {
+        if (strcmp(bookings[i].customerName, name) == 0) {
+            for (int j = i; j < bookingCount - 1; j++) {
+                bookings[j] = bookings[j + 1];
+            }
+            bookingCount--;
+            printf("Booking for '%s' deleted successfully!\n", name);
+            return;
+        }
+    }
+    printf("Booking not found!\n");
+}
+
+int main() {
+    int choice;
+    char name[NAME_LENGTH];
+    char destination[DEST_LENGTH];
+    int nights;
+    double price;
+    
+    while (1) {
+        printf("\nTourism Booking System\n");
+        printf("1. Add Booking\n");
+        printf("2. List Bookings\n");
+        printf("3. Delete Booking\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();
+        
+        switch (choice) {
+            case 1:
+                printf("Enter customer name: ");
+                fgets(name, NAME_LENGTH, stdin);
+                name[strcspn(name, "\n")] = 0;
+                printf("Enter destination: ");
+                fgets(destination, DEST_LENGTH, stdin);
+                destination[strcspn(destination, "\n")] = 0;
+                printf("Enter number of nights: ");
+                scanf("%d", &nights);
+                printf("Enter price per night: ");
+                scanf("%lf", &price);
+                addBooking(name, destination, nights, price * nights);
+                break;
+            case 2:
+                listBookings();
+                break;
+            case 3:
+                printf("Enter customer name: ");
+                fgets(name, NAME_LENGTH, stdin);
+                name[strcspn(name, "\n")] = 0;
+                deleteBooking(name);
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
